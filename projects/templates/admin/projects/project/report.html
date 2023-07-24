@@ -1,0 +1,61 @@
+<!--
+    Copyright 2023 University of Southampton
+    Dr Philip Basford
+    μ-VIS X-Ray Imaging Centre
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+{% block title %}Project report{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; Project report
+</div>
+{% endblock %}
+
+{%block content %}
+    {% if projet.title %}
+        <h1>Report for {{ project.title }} ({{ project.name }})</h1>
+    {% else %}
+        <h1>Report for {{ project.name }}</h1>
+    {% endif %}
+        <table>
+            <tr><td>Samples</td><td>{{ project.sample_count }} </td><td>Number of samples linked to project</td></tr>
+            <tr><td>Samples held</td><td>{{ project.samples_in_custody }} </td><td>Number of samples we have responsibility for</td></tr>
+            <tr><td>Average scans per sample</td><td>{{ project.average_scans_per_sample }} </td><td>Number of xtec files per sample</td></tr>
+            <tr><td>Average scan time per sample</td><td>{{ project.estimate_average_scan_time_per_sample }} </td><td>Calculated based on no. projects, shuttling, exposure</td></tr>
+            <tr><td>Reports generated</td><td>{{ project.report_count }}</td><td></td></tr>
+            <tr><td>Direct scan count</td><td>{{ project.direct_scan_count }}</td><td>Scans (xtek files) associated via muvis bug ID(s)</td></tr>
+            <tr><td>Direct scan time</td><td>{{ project.estimate_direct_scan_time }} </td><td>Calculated beam time associated via bug ID</td></tr>
+            <tr><td>Direct disk usage</td><td>{{ project.direct_disk_usage_str }} </td><td>Usage of all scans assocaited via bug ID</td></tr>
+            <tr><td>Total scan count</td><td>{{ project.total_scan_count }}</td><td>Scan (xtek files) of all samples associated</tr>
+            <tr><td>Total scan time</td><td>{{ project.estimate_total_scan_time }} </td>Calculated beam time for all samples associated</td></tr>
+            <tr><td>Total disk usage</td><td>{{ project.total_disk_usage_str }} </td><td>Usage of all scans associated to this project</td></tr>
+        </table>
+{% endblock %}

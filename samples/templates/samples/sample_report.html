@@ -1,0 +1,392 @@
+<!--
+    Copyright 2023 University of Southampton
+    Dr Philip Basford
+    μ-VIS X-Ray Imaging Centre
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<html>
+    <head>
+        <title>XRH Preliminary Report: {{ xrh_id }}</title>
+        <style>
+            @page{
+                size: A4 portrait;
+                
+                @top-center{
+                    background-position: 0cm 0.5cm;
+                    width: 21cm;
+                    height: 3.81cm;
+                    background-image: url("file://{{ header_img }}");
+                    content: "";
+                    background-size: 100% 100% ;
+                }
+
+                @bottom-left{
+                    font-size: 9pt;
+                    content: "{{ generated }}";
+                }
+                @bottom-center{
+                    font-size: 9pt;
+                    content: counter(page) "/" counter(pages);
+                }
+                @bottom-right{
+                    font-size: 9pt;
+                    content: "Contact us at: xrh@soton.ac.uk";
+                }
+            }
+
+            table{
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            img{
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            p.caption{
+                text-align:center
+            }
+            h1{
+                font-size: 16pt;
+                font-weight: bold;
+                text-align: center;
+            }
+            h2{
+                font-size: 14pt;
+                font-style: italic;
+                font-weight: lighter;
+                text-align: center;
+            }
+            h3{
+                font-size:13pt;
+                font-weight: bold;
+            }
+            h4{
+                font-size:11pt;
+                font-weight: bold;
+            }
+            h4.ul{
+                text-decoration: underline;
+            }
+            h5{
+                font-size:11pt;
+            }
+            strong{
+                font-weight: bold;
+                font-size: 10pt;
+            }
+            p{
+                font-size: 10pt;
+                page-break-inside: avoid;
+                page-break-before: avoid;
+            }
+            th{
+                border-bottom: 1px solid black;
+            }
+
+            th, td{
+                text-align: left;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            tr:nth-child(even){
+                background-color: #cfcfcf;
+            }
+            div.video{
+                padding: 0px 0px 50px 0px;
+                page-break-inside: avoid;
+            }
+            body{
+                font-size: 10pt;
+                color: #333333;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>XRH Preliminary Report: {{ xrh_id }}</h1>
+        <h2>{{ project_title }}</h2>
+        <h3>Sample Overview</h3>
+        <p>
+            <strong>Assigned Sample ID:</strong> {{ xrh_id }} <br/>
+            <strong>Original ID:</strong> {{ original_id }} <br/>
+            <strong>Species:</strong> {{species}}<br/>
+            <strong>Tissue:</strong> {{tissue}}<br/>
+            {% if condition %}
+                <strong>Condition:</strong> {{condition}}<br/>
+            {% endif %}
+            {% if status %}
+                <strong>Current Status / Location:</strong> {{ status }}<br/>
+                 N.B. If you have access to this location please don't move it without letting a member of XRH team know.<br/>
+            {% endif %}
+            {% if storage_requirements %}
+                <strong>Storage Requirements:</strong> {{ storage_requirements }}<br/>
+            {% endif %}
+            {% if extraction_method %}
+                <strong>Extraction Method / Surgical Procedure:</strong> {{ extraction_method }}<br/>
+            {% endif %}
+            <strong>Description:</strong><br/>
+            {{ sample_description }}
+        </p>
+        {% if delivered_pic_front and delivered_pic_back %}
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            <img src="{{ delivered_pic_front }}" width="{{ img_width_2  }}" /><br/>
+                            <p class="caption">
+                                Front of sample as delivered.
+                            </p>
+                        </td>
+                        <td>
+                            <img src="{{ delivered_pic_back}}" width="{{ img_width_2  }}" /><br/>
+                            <p class="caption">
+                                Back of sample as delivered.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        {% elif delivered_pic_front %}
+            <div>
+                <img src="{{ delivered_pic_front }}" width="{{ img_width  }}" /><br/>
+                <p class="caption">
+                    Front of sample as delivered.
+                </p>
+            </div>
+        {% endif %}
+        {% if scans|length > 1 %}
+            <p>This report contains details about the following scans.</p>
+            <table>
+                <tr><th>Scan name</th></tr>
+                {% for scan in scans %}
+                    <tr><td><a href="#{{scan.name}}">{{ scan.name }}</a> </td></tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+        <h3 style="page-break-before: always;">Scans </h3>
+        {% for scan in scans %}
+            <a id="{{scan.name}}"><h4>{{ scan.name }}</h4>
+            <strong>Scan properties</strong><br/>
+            <table>
+                <tr><th>Parameter</th><th>Value</th></tr>
+                {% for key, value in scan.properties.items %}
+                    <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+                {% endfor %}
+            </table>
+            {% if scan.histology %}
+                {% if scan.images %}
+                    <strong>Images</strong>
+                    {% for image in scan.images %}
+                        <div class="video">
+                            <img src="{{ image.url }}" height="{{ overview_height }}"/></a><br/>
+                            <p class="caption" style="page-break-before:avoid">
+                                {{ image.description }}
+                            </p>
+                        </div>        
+                    {% endfor %}
+                {% endif %}
+
+            {% else %}
+                <p>These dimensions are for the raw reconstructed volume only, other files may have been processed to have different dimensions.</p>
+                {% if scan.images %}
+                    <strong>Images</strong>
+                    {% for image in scan.images %}
+                        <div class="video">
+                            <img src="{{ image.url }}" width="{{ img_width }}"/></a><br/>
+                            <p class="caption" style="page-break-before:avoid">
+                                {{ image.description }}
+                            </p>
+                        </div>        
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+            {% for histo in scan.histology %}
+                <strong>{{ histo.name }}</strong>
+                <table>
+                    <tr><th>Parameter</th><th>Value</th></tr>
+                    {% for key, value in histo.params.items %}
+                        <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+                    {% endfor %}
+                </table>
+                <img src="{{ histo.image }}" width="{{ img_width }}"/></a><br/>
+                <p class="caption" style="page-break-before:avoid">
+                    Preview of Image. Warning: for fluorescent images these colours may not be representative.
+                </p>
+                <table>
+                    <tr>
+                        {% for param in histo.planes.0.params.keys %}
+                            <th>{{ param }}</th>
+                        {% endfor %}
+                    </tr>
+                    {% for plane in histo.planes %}
+                        <tr>
+                            {% for value in plane.params.values %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+                <p>
+                    {% for plane in histo.planes %}
+                        {% if plane.image %}
+                        <img src="{{ plane.image}}" width="{{img_width_2}}"/>
+                        <p class="caption" style="page-break-before:avoid">
+                            Preview of plane {{plane.params.Name}}
+                        </p>
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            {% endfor %}
+            {% if scan.videos %}
+            <strong>Videos</strong><br/>
+                {% for video in scan.videos %}
+                    <div class="video">
+                        <a href="{{ video.url }}"><img src="{{video.thumb}}" width="{{ img_width }}" /></a><br/>
+                        <p class="caption" style="page-break-before: avoid">
+                            {{ video.description }} <br/><strong>Available online:</strong><a href="{{ video.url }}">{{ video.url }}</a><br/>
+                            {% if video.notes %}
+                                {{ video.notes | safe}}
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        {% if further_analysis %}
+        <h3>Potential further Analysis</h3>
+            {% for paragraph in further_analysis %}
+            <p>
+                {{ paragraph }}
+            </p>
+        {% endfor %}
+        {% endif %}
+        <h3 style="page-break-before: always;">Useful links* and Information</h3>
+        <h4 class="ul">About 3D X-ray Histology</h4>
+        <ul>
+            <li>
+                <strong>Main XRH website:</strong><br/>
+                <a href="http://www.xrayhistology.org">www.xrayhistology.org</a>
+            </li>
+            <li>
+                <strong>The XRH team:</strong><br/>
+                <a href="http://www.southampton.ac.uk/muvis/xrh/xrh-people.page">www.southampton.ac.uk/muvis/xrh/xrh-people.page</a>
+            </li>
+            <li>
+                <strong>Basic introduction to 3D X-Ray Histology (XRH):</strong><br/>
+                <a href="http://www.southampton.ac.uk/muvis/xrh/xrh-intro.page">www.southampton.ac.uk/muvis/xrh/xrh-intro.page</a>
+            </li>
+            <li>
+                <strong>Publications:</strong><br />
+                <a href="http://www.southampton.ac.uk/muvis/xrh/xrh-publications.page">www.southampton.ac.uk/muvis/xrh/xrh-publications.page</a>
+            </li>
+        </ul>
+        <h4 class="ul">About your XRH session</h4>
+        <ul>
+            <li>
+                <strong>XRH sessions are governed by a memorandum of collaboration.</strong> The full text is available here: <a href="https://www.southampton.ac.uk/muvis/xrh/xrh-get-involved.page">www.southampton.ac.uk/muvis/xrh/xrh-get-involved.page</a>.
+            </li>
+            <li>
+                <strong>The work should be planned in anticipation of publication </strong><br /> 
+                In any publication(s) the collaboration should be recognised with co-authorship of relevant XRH staff according to contemporary publishing practice; eg:<a href="www.nature.com/authors/policies/authorship.html">www.nature.com/authors/policies/authorship.html</a>
+            </li>
+            <li>
+                <strong>XRH Wiki: </strong>Training materials and tips to guide you through understanding, handling and interpreting your XRH data can be found in <a href="https://sites.google.com/view/xrayhistologywiki/">https://sites.google.com/view/xrayhistologywiki/</a>.
+            </li>
+        </ul>
+        <h4 class="ul">About the facilities</h4>
+        <ul>
+            <li>3D X-Ray Histology (XRH): <a href="http://www.xrayhistology.org">www.xrayhistology.org</a></li>
+            <li>&micro;-VIS X-Ray Imaging Centre: <a href="http://www.muvis.org">www.muvis.org</a></li>
+            <li>Biomedical Imaging Unit (BIU): <a href="http://www.southampton.ac.uk/biu/">www.southampton.ac.uk/biu/</a></li>
+        </ul>
+        <h4 class="ul">About image analysis and visualisation</h4>
+        <p>
+            There are a number of volume visualisation and analysis software available, some of which are free and others are commercial products. A representative (but by no means exhaustive) list of tools that can be used for XRH can be found in our Wiki, along with step-by-step and getting started instructions.<br />
+            <a href="https://sites.google.com/view/xrayhistologywiki/software">https://sites.google.com/view/xrayhistologywiki/software</a>
+        </p>
+        <p>* The University of Southampton cannot accept responsibility for the content of external websites.</p>
+
+        <h3 style="page-break-before: always;">Appendix</h3>
+        {% for scan in scans %}
+            {% if scan.params or scan.appendix_videos %}
+            <h4>Additional Information {{ scan.name }}</h4>
+            <h5>Scan Parameters</h5>
+            <table>
+                <tr><th>Parameter</th><th>Value</th></tr>
+                {% for key, value in scan.params.items %}
+                    <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+                {% endfor %}
+            </table>
+            {% if scan.appendix_videos %}
+                <h5>Additional Videos</h5>
+                    {% for video in scan.appendix_videos %} 
+                        <div class="video">
+                            <a href="{{ video.url }}"><img src="{{ video.thumb }}" width="{{ img_width }}"/></a><br/>
+                            <p class="caption" style="page-break-before: avoid">
+                                {{ video.description }} <br/><strong>Available online:</strong><a href="{{video.url }}">{{ video.url}} </a><br/>
+                                {% if video.notes %}
+                                    {{ video.notes | safe}}
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endfor %}
+            {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% if returned_pic_front and returned_pic_back %}
+        <h4>Returned photos</h4>
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            <img src="{{ returned_pic_front }}" width="{{ img_width_2  }}" /><br/>
+                            <p class="caption">
+                                Front of sample as returned.
+                            </p>
+                        </td>
+                        <td>
+                            <img src="{{ returned_pic_back}}" width="{{ img_width_2  }}" /><br/>
+                            <p class="caption">
+                                Back of sample as returned.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        {% elif returned_pic_front %}
+        <h4>Returned photo</h4>
+            <div>
+                <img src="{{ returned_pic_front }}" width="{{ img_width  }}" /><br/>
+                <p class="caption">
+                    Front of sample as returned.
+                </p>
+            </div>
+        {% endif %}
+        {% if generic_photos %}
+            <h4>Other photos</h4>
+            {% for photo in generic_photos %}
+                <h5>{{ photo.name }}</h5>
+                <img src="{{ photo.pic }}" width="{{ img_width }}" /> <br/>
+                {% if photo.notes %}
+                    <p>
+                        {{ photo.notes }}
+                    </p>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </body>
+</html>

@@ -1,0 +1,73 @@
+<!--
+    Copyright 2023 University of Southampton
+    Dr Philip Basford
+    μ-VIS X-Ray Imaging Centre
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+{% block title %}Sample bulk add project{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; Bulk Sample add project
+</div>
+{% endblock %}
+
+<!-- Using https://www.willandskill.se/en/custom-django-admin-actions-with-an-intermediate-page/ as inspiration -->
+{%block content %}
+    <form action ="" method="post">
+        {% csrf_token %}
+        <p>
+            Are you sure you want to add the following samples to the selected project:
+            <table>
+                <tr>
+                    <th>Sample ID</th><th>Original ID</th>
+                </tr>
+                    {% for sample in samples %}
+                        <tr>
+                            <td>{{ sample.xrh_id }}</td>
+                            <td>{{ sample.original_id }}</td>
+                    </tr>
+                    <input type="hidden" name="_selected_action" value="{{sample.pk}}" />
+                    {% endfor %}
+            </table>
+        </p>
+        <p>
+            <b>New Project:</b>
+            <select name="project" id="project">
+                {% for project in projects %}
+                    <option value ={{ project.pk }}> {{ project.name }} </option>
+                {% endfor %}
+            </select>
+        </p>
+        <input type="hidden" name="action" value="bulk_proj_add" />
+        <input type="submit" name="abort" value="No"/>
+        <input type="submit" name="apply" value="Yes"/>
+    </form>
+{% endblock %}

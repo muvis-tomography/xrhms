@@ -1,0 +1,66 @@
+<!--
+    Copyright 2023 University of Southampton
+    Dr Philip Basford
+    μ-VIS X-Ray Imaging Centre
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<html>
+<p>
+{% if project_full_title %}
+<b>Project title:</b> {{ project_full_title }}<br/>
+{% endif %}
+<b>Project name:</b> {{ project_name }}<br/>
+<b>Project status:</b> {{ project_status }}<br/>
+<b>Project URL:</b> <a href="{{ project_url }}">{{ project_url }}</a><br/>
+<b>Project updated:</b> {{ updated }}<br/>
+<b>Project updated by:</b> {{ updated_by }}<br/>
+</p>
+
+{% if last_action %}
+<p>
+<b>Last action:</b><br/>
+<pre>
+{{ last_action }}
+</pre>
+{% if last_action_date %}
+<b>Last action date:</b> {{ last_action_date }}<br/>
+{% endif %}
+</p>
+{% endif %}
+
+{% if notes %}
+<p>
+<b>Notes:</b><br/>
+<pre>
+{{ notes }}
+</pre>
+</p>
+{% endif %}
+
+{% if next_action %}
+<p>
+<b>Next action:</b><br/>
+<pre>
+{{ next_action }}
+</pre>
+{% if next_action_deadline %}
+<b>Next action deadline:</b> {{ next_action_deadline }}<br/>
+{% endif %}
+<b>Next action status:</b> {{ next_action_status }}<br/>
+</p>
+{% endif %}
+<p>
+<b>Update URL:</b> <a href="{{update_url}}">{{update_url}}</a>
+</p>
+</html>

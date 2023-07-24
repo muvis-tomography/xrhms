@@ -1,0 +1,66 @@
+<!--
+    Copyright 2023 University of Southampton
+    Dr Philip Basford
+    μ-VIS X-Ray Imaging Centre
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<html>
+    <head>
+        <title>Sample Label</title>
+        <style>
+            @page{
+                size: {{ width }}mm {{height}}mm;
+                margin: 1px;
+            }
+            h1{
+                font-size: 8pt;
+                font-weight: bold;
+                line-height: 8px;
+            }
+            h2{
+                font-size: 6pt;
+                font-weight: bold;
+                line-height: 8px;
+            }
+            td{
+                font-size: 6pt;
+                line-height: 0px;
+            }
+            th{
+                font-size: 10pt;
+                font-weight: bold;
+                text-align: center;
+            }
+            tr{
+                margin: 1px;
+                padding: 1px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th align="center" colspan="2">XRH Project</th>
+            </tr>
+            <tr>
+                <td><img src={{ qr_code }} width=20mm height=20mm /></td>
+                <td valign="top">
+                    <h1>Drive ID:</h1> {{ drive_id }}<br/>
+                    <h1>Date created:</h1> {{ created }} <br/>    
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
